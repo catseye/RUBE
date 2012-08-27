@@ -23,7 +23,7 @@ OBJS=rube${O}
 all: ${PROG}${EXE}
 
 ${PROG}${EXE}: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o ${PROG} $(LIBS)
+	$(CC) $(OBJS) -o ${PROG} $(LIBS)
 
 rube${O}: rube.c
 	$(CC) $(CFLAGS) -c rube.c -o rube${O}
