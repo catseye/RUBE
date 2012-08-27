@@ -1,38 +1,41 @@
 /*
-
-   rube.c - RUBE language
-   Interpreter/Debugger Implementation
-     v1.02, Jul 1997, Chris Pressey
-
-   (c)1997, 2000 Cat's Eye Technologies.
-   http://www.catseye.mb.ca/
-
-   Usage :
-
-   rube [-d] [-q] [-r input-file] [-w output-file]
-	[-y delay] [-f frame-skip] [-o offset] <rube-source>
-
-      -d: disable debugging output
-      -q: produce no output but program output
-      -r: redirect input from a specified file instead of stdin
-      -w: redirect output to a specified file instead of stdout
-      -y: specify debugging delay in milliseconds (default 0)
-      -f: specify debugging frame skip in frames (default 1)
-
-   Compilation :
-
-   MS-DOS: used Borland C++ v3.1 to compile RUBE.EXE
-
-   Notes for the DOS version:
-     Load ANSI.SYS or compatible ANSI driver before using.
-
-   v1.00: May/Jun 97 original, minimal implementation
-   v1.01: Jun 97 added K gate, AV swinches, + packer, - unpacker
-   v1.02: Jul 97 fixed bug in WM winches, - unpacker, added . and C
-	  doubled height of playfield and improved debugger.
-	  added Ben Olmstead's cursor-turner-offer-thingy.
-	  added -q option.
-
+ * rube.c v1.3, Feb 2010, Chris Pressey
+ * Interpreter/Debugger for the RUBE programming language
+ *
+ * (c)1997-2010 Cat's Eye Technologies.  All rights reserved.
+ *
+ * Freely redistributable unmodified for non-commmercial purposes.
+ * THIS "AS-IS" SOFTWARE COMES WITH NO WARRANTY, EXPRESS OR IMPLIED.
+ *
+ * Usage :
+ *
+ * rube [-d] [-q] [-r input-file] [-w output-file]
+ *      [-y delay] [-f frame-skip] [-o offset] <rube-source>
+ *
+ *  -d: disable debugging output
+ *  -q: produce no output but program output
+ *  -r: redirect input from a specified file instead of stdin
+ *  -w: redirect output to a specified file instead of stdout
+ *  -y: specify debugging delay in milliseconds (default 0)
+ *  -f: specify debugging frame skip in frames (default 1)
+ *
+ * Compilation :
+ *
+ * MS-DOS: tested with Borland C++ v3.1.
+ *         Load ANSI.SYS or compatible ANSI driver before using.
+ * Windows: tested with GCC 3.4.4 under Cygwin.
+ * Linux: tested with GCC 4.2.4 under Ubuntu 8.04.3 LTS.
+ *
+ * History :
+ *
+ * v1.00: May/Jun 97 original, minimal implementation
+ * v1.01: Jun 97 added K gate, AV swinches, + packer, - unpacker
+ * v1.02: Jul 97 fixed bug in WM winches, - unpacker, added . and C
+ *	  doubled height of playfield and improved debugger.
+ *	  added Ben Olmstead's cursor-turner-offer-thingy.
+ *	  added -q option.
+ * v1.3: Feb 110 made compilable in POSIX and strict ANSI C89.
+ *        screen is cleared before drawing initial playfield.
  */
 
 /********************************************************* #INCLUDE'S */
@@ -46,6 +49,11 @@
 #include <time.h>
 #if __BORLANDC__
   #include <dos.h>
+#else
+  #define stricmp strcasecmp
+#endif
+#ifdef _POSIX_C_SOURCE
+  #include <sys/time.h>
 #endif
 
 /********************************************************** #DEFINE'S */
@@ -100,9 +108,7 @@ char htoc(int i);
 
 /******************************************************* MAIN PROGRAM */
 
-void main (argc, argv)
-     int argc;
-     char **argv;
+int main (int argc, char **argv)
 {
   FILE *f;
   FILE *fi;
@@ -142,7 +148,7 @@ __asm
     if (!stricmp(argv[i], "-y")) { deldur = atoi(argv[i + 1]); }
     if (!stricmp(argv[i], "-f")) { debskip = atoi(argv[i + 1]); }
   }
-  if (!quiet) printf ("Cat's Eye Technologies RUBE Interpreter v1.02\n");
+  if (!quiet) printf ("Cat's Eye Technologies RUBE Interpreter v1.3\n");
   if ((f = fopen (argv[argc - 1], "r")) != NULL)             /*** Input Phase */
   {
     int x = 0, y = 0;
@@ -197,6 +203,10 @@ __asm
   setcbrk(1);
 #endif
 
+  if (debug)
+  {
+    printf ("%c[2J", 27);
+  }
   while (!done)          /*** Intepreting Phase */
   {
     if ((debug) && (!(frame++ % debskip) || (!frame)))
@@ -212,7 +222,7 @@ __asm
       }
     } else
     {
-      // putc('.', stdout);
+      /* putc('.', stdout); */
     }
     fflush (stdout);
     fflush (stdin);
@@ -229,7 +239,7 @@ __asm
 	  case 20: case 21: case 22: case 23: case 24:
 	  case 25: case 26: case 27: case 28: case 29:
 	  case 30: case 31: case 32:
-	    if (iscrate(curd(0,-1))) nex = curd(0,-1);    // falling in from above
+	    if (iscrate(curd(0,-1))) nex = curd(0,-1);    /* falling in from above */
 	    if (curd(0,-1) == '(') nex = '(';
 	    if (curd(0,-1) == ')') nex = ')';
 
@@ -302,7 +312,7 @@ __asm
 	    if (curd(0,-1) == ':') nex = curd(0,-2);
 	    if ((curd(0,-1) == ';') && (iscrate(curd(0,-2)))) nex = curd(0,-2);
 	    if ((curd(0,1) == '.') && (iscrate(curd(0,2)))) nex = curd(0,2);
-	    if ((curd(-1,0) == '(') && (curd(1,0) == ')')) // collision
+	    if ((curd(-1,0) == '(') && (curd(1,0) == ')')) /* collision */
 	    {
 	      nex = ' ';
 	    } else
@@ -316,7 +326,7 @@ __asm
 	      }
 	    }
 	    if (iscrate(curd(-1,0)))
-	    { // shift crates
+	    { /* shift crates */
 	      int bx=-1;
 	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
 	      {
@@ -408,7 +418,7 @@ __asm
 		    printf ("%c[%d;%dH%c[K", 27, 25, 1, 27);
 		    debopos += strlen(s);
 		  }
-		  printf(s);
+		  printf("%s", s);
 		} else
 		{
 		  printf("%d ", (int)d);
@@ -462,7 +472,7 @@ __asm
 	}
       }
     }
-    // fix nex array
+    /* fix nex array */
     for (x=0; x<=(maxx); x++)
     {
       for (y=0; y<=(maxy); y++)
@@ -538,9 +548,8 @@ __asm
 	    (curd(0,1)=='F')) nex = ' ';
       }
     }
-#if __BORLANDC__
-    delay (deldur);
-#endif
+    if (deldur > 0)
+      rube_delay (deldur);
     memcpy(pg, pg2, LINEWIDTH * PAGEHEIGHT * sizeof(cell));
   }
   if (fi) fclose (fi);
@@ -558,20 +567,17 @@ __asm
   exit (0);
 }
 
-int isramp(c)
-  char c;
+int isramp(char c)
 {
   return ((c=='/')||(c=='\\'));
 }
 
-int isblock(c)
-  char c;
+int isblock(char c)
 {
   return ((c=='='));
 }
 
-int issupport(c)
-  char c;
+int issupport(char c)
 {
   return ((c=='=')||iscrate(c)||(c=='(')||(c==')')||(c==';')||
 	  (c=='/')||(c=='\\')||(c==':')||(c=='*')||(c==',')||
@@ -579,8 +585,7 @@ int issupport(c)
 	  (c=='A')||(c=='V')||(c=='~')||(c=='.'));
 }
 
-int iscrate(c)
-  char c;
+int iscrate(char c)
 {
   return ((c=='0')||(c=='1')||(c=='2')||(c=='3')||
 	  (c=='4')||(c=='5')||(c=='6')||(c=='7')||
@@ -588,14 +593,28 @@ int iscrate(c)
 	  (c=='c')||(c=='d')||(c=='e')||(c=='f'));
 }
 
-int ctoh(c)
-  char c;
+int ctoh(char c)
 {
   if((c>='0') && (c<='9')) return (c-'0'); else return ((c-'a')+10);
 }
 
-char htoc(i)
-  int i;
+char htoc(int i)
 {
   if((i>=0) && (i<=9)) return ((char)(i+'0')); else return ((char)(i+'a')-10);
+}
+
+int rube_delay(int msec)
+{
+#if __BORLANDC__
+  delay (msec);
+#elsif _POSIX_C_SOURCE
+  struct timespec d;
+
+  d.tv_sec = msec / 1000;
+  msec %= 1000;
+  d.tv_nsec = msec * 1000000;
+  nanosleep(&d, NULL);
+#else
+  sleep(msec / 1000);
+#endif
 }

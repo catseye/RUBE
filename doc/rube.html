@@ -1,75 +1,37 @@
-<html><head>
-    <meta http-equiv="Content-Type" content="text/html;CHARSET=iso-8859-1">
-    <meta name="Description" content="Cat's Eye Technologies: The RUBE Language">
-    <title>Cat's Eye Technologies: The RUBE Language</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>The RUBE Automaton</title>
 </head>
 <body>
-<center>
-<A HREF="/esoteric/index.html">Esoteric Topics in Computer Programming</A> presents...
-<br><table border=0><tr>
-    <td nowrap align=center valign=center
-    bgcolor="#000000" background="/img/sineblack.gif">&nbsp;<a href="http://www.catseye.mb.ca/index.html"><img
-    align=absmiddle src="/img/3qtrsize.gif"
-    alt="Cat's Eye Technologies" border=0></a>&nbsp;</td>
-    <td nowrap align=center><font size=+3
-    face="century gothic,arial,times new roman" color="#800000">&nbsp;&nbsp;</font><FONT face="arial,monaco" color=#00007f SIZE=+4><B>R</B></FONT>
-<FONT face="arial,monaco" color=#007f00 SIZE=+4><B>U</B></FONT>
-<FONT face="arial,monaco" color=#007f7f SIZE=+4><B>B</B></FONT>
-<FONT face="arial,monaco" color=#7f0000 SIZE=+4><B>E</B></FONT><font></td>
-    </tr></table>
 
-<TABLE WIDTH="100%"><TR><TD WIDTH="50%" ALIGN=LEFT VALIGN=TOP>
+<h1>RUBE</h1>
 
-<p><font face="arial,monaco" size=+2><b>Language</b></font>
+<p><dfn>RUBE</dfn> is a tribute to Rube Goldberg, creator of all those unique
+cartoon contrivances, who showed the world that anything
+can be done in a more complicated fashion than necessary.</p>
 
-<P>RUBE is a tribute to Rube Goldberg, creator of all those unique
-cartoon contrivances, showed the world that anything
-can be done in a more complicated fashion than necessary.
-
-<p>The language itself is a cellular "bully" automaton: certain state
+<p>The RUBE language is a "bully" cellular automaton: certain state
 transitions force other, non-adjacent cells to assume certain state
 transitions.  Although this may sound like an interesting notion, the
 number of interactions climbs quickly as more objects are added, and
 things get much messier than they normally would in a regular
-cellular automaton, like John Conway's Game of Life.
+cellular automaton, like John Conway's Game of Life.</p>
 
 <p>Also unlike a real cellular automaton, RUBE supports rudimentary
-output functionality; input was planned, but has never been implemented.
+output functionality; input was planned, but has not yet been implemented.</p>
 
-<p><a HREF="/esoteric/alpaca/redgreen/index.html">REDGREEN</A> is an
-updated version of the RUBE universe, one which is expressible as
-a proper cellular automaton.
+<p>Because implementing an algorithm in RUBE is a clumsy job
+of co-ordinating concurrently operating sections of the playfield, few
+non-trivial RUBE programs exist.  In particular, it has never to the
+author's knowledge been shown that RUBE is Turing-complete.
+On the other hand, it has never been shown that it's not.</p>
 
-<p><img src="/img/new.gif" alt="[NEW]" width=26 height=16 border=0> John Colagioia has created a more consistent version of
-the RUBE language, <a href="klik.txt">RUBE II:  Das Klickenklacker</a>.
-
-</TD><TD WIDTH="50%" ALIGN=RIGHT VALIGN=BOTTOM>
-
-<p><font face="arial,monaco" size=+2><b>Implementation</b></font>
-
-<p>You can download the <a href="/esoteric/rube/rubev102.zip"><img src="/img/fileicon.gif" border=0 ALT="[D/L]" width=12 height=12>RUBE</a> distribution from
-this web server.
-It contains C source code, documentation, and a precompiled binary for MS-DOS.
-
-<p>You can also download John's <a href="/esoteric/rube/rube_ii.zip"><img src="/img/fileicon.gif" border=0 ALT="[D/L]" width=12 height=12>RUBE II</a>
- distribution from this web server.
-Strangely enough it <i>also</i> contains C source code, documentation, and a precompiled binary for MS-DOS.
-
-<p><font face="arial,monaco" size=+2><b>Documentation</b></font>
-
-<p>See <a href="/esoteric/rube/rube.txt">rube.txt</a> for the original
-description of the interpreter, <a href="/esoteric/rube/klik.txt">klik.txt</a>
-for RUBE II.
-
-<p><font face="arial,monaco" size=+2><b>Programs</b></font>
-
-<p>Attempting to write anything even approaching a single
-"Turing-power" in this language is an utter nightmare.  Partly this
-is because the playfield in the available implementation is
-restricted to 80 columns by 25 rows.  But mostly it's just because
-programming anything non-trivial in RUBE is a clumsy job of
-co-oridnating concurrently operating sections of the playfield.
-
-</TD></TR></TABLE>
+<p>See <a href="rube.txt">rube.txt</a> for the original
+description of the RUBE interpreter.  The only point that perhaps
+needs clarification is that the limitation of the playfield to 80x25
+is a limitation of the implementation, not of the language.
+The language imposes no bounds on the size of a RUBE playfield.</p>
 
 </body></html>
