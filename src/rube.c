@@ -1,21 +1,19 @@
 /*
- * rube.c v1.4, Apr 2010, Chris Pressey
+ * rube.c v1.5, Jan 2011, Chris Pressey
  * Interpreter/Debugger for the RUBE programming language
  *
- * (c)1997-2010 Cat's Eye Technologies.  All rights reserved.
+ * (c)1997-2011 Cat's Eye Technologies.  All rights reserved.
  *
  * Freely redistributable unmodified for non-commmercial purposes.
  * THIS "AS-IS" SOFTWARE COMES WITH NO WARRANTY, EXPRESS OR IMPLIED.
  *
  * Usage :
  *
- * rube [-d] [-q] [-r input-file] [-w output-file]
- *      [-y delay] [-f frame-skip] [-o offset] <rube-source>
+ * rube [-d] [-q] [-i] [-y delay] [-f frame-skip] [-o offset] <rube-source>
  *
  *  -d: disable debugging output
  *  -q: produce no output but program output
- *  -r: redirect input from a specified file instead of stdin
- *  -w: redirect output to a specified file instead of stdout
+ *  -i: run interactively (single step with lines from stdin)
  *  -y: specify debugging delay in milliseconds (default 0)
  *  -f: specify debugging frame skip in frames (default 1)
  *
@@ -25,6 +23,7 @@
  *         Load ANSI.SYS or compatible ANSI driver before using.
  * Windows: tested with GCC 3.4.4 under Cygwin.
  * Linux: tested with GCC 4.2.4 under Ubuntu 8.04.3 LTS.
+ * AmigaOS: tested with DICE C 3.16 under AmigaOS 1.3.
  *
  * History :
  *
@@ -39,6 +38,8 @@
  * v1.4: Apr 110 really made compilable in strict ANSI C89.
  *        made command-line options case-senstive.
  *        added GNU Makefile.
+ * v1.5: Jan 111 simplified and cleaned up code, allowing it to
+ *        build on AmigaOS 1.3 using DICE C.  Added -i option.
  */
 
 /********************************************************* #INCLUDE'S */
@@ -65,9 +66,6 @@
 #define SCREENWIDTH  79
 #define SCREENHEIGHT 22
 
-#define cur          pg[y * LINEWIDTH + x].c
-#define curv         pg[y * LINEWIDTH + x].v
-#define curd(dx,dy)  pg[(y+dy) * LINEWIDTH + (x+dx)].c
 #define nex          pg2[y * LINEWIDTH + x].c
 #define nexv         pg2[y * LINEWIDTH + x].v
 #define nexd(dx,dy)  pg2[(y+dy) * LINEWIDTH + (x+dx)].c
@@ -89,9 +87,8 @@ cell *head = NULL;
 
 int x = 0, y = 0;                /* x and y looping */
 int dx = 1, dy = 0;              /* direction of looping */
-int debug = 1;                   /* flag : display ANSI debugging? */
-int infile = 0, ia;              /* flag : use input file, and assoc arg? */
-int outfile = 0, oa;             /* flag : use output file, and assoc arg? */
+int debug = 1;                   /* flag: display ANSI debugging? */
+int interactive = 0;             /* flag: ask for input each frame? */
 int deldur = 0;                  /* debugging delay in milliseconds */
 int debskip = 1;		 /* frame skip in debug view */
 int debopos = 1;       		 /* output column in debugger */
@@ -113,15 +110,12 @@ int rube_delay(int msec);
 int main (int argc, char **argv)
 {
   FILE *f;
-  FILE *fi;
-  FILE *fo;
-  FILE *fs;
   int i;
   int done=0;
   int maxy=0; int maxx=0;
-  short signed oldcursor;
 
 #ifdef CURSOROFF
+short signed oldcursor;
 __asm
 {
   mov al,0x03
@@ -138,68 +132,47 @@ __asm
 
   if (argc < 2)
   {
-    printf ("USAGE: rube [-d] [-q] [-r input] [-w output] [-y delay] [-f skip] foo.rub\n");
+    printf ("USAGE: rube [-d] [-q] [-i] [-y delay] [-f skip] foo.rub\n");
     exit (0);
   }
   for (i = 1; i < argc; i++)
   {
     if (!strcmp(argv[i], "-d")) { debug = 0; }
     if (!strcmp(argv[i], "-q")) { quiet = 1; debug = 0; }
-    if (!strcmp(argv[i], "-r")) { infile = 1; ia = i + 1; }
-    if (!strcmp(argv[i], "-w")) { outfile = 1; oa = i + 1; }
+    if (!strcmp(argv[i], "-i")) { interactive = 1; debug = 1; }
     if (!strcmp(argv[i], "-y")) { deldur = atoi(argv[i + 1]); }
     if (!strcmp(argv[i], "-f")) { debskip = atoi(argv[i + 1]); }
   }
-  if (!quiet) printf ("Cat's Eye Technologies RUBE Interpreter v1.4\n");
-  if ((f = fopen (argv[argc - 1], "r")) != NULL)             /*** Input Phase */
-  {
-    int x = 0, y = 0;
-    while (!feof (f))
-    {
-      cur = fgetc (f);
-      if (cur == '\n')
-      {
-	cur = ' ';
-	x = 0;
-	y++;
-	if (y >= PAGEHEIGHT) break;
-      } else
-      {
-	x++;
-	if (x > maxx) maxx = x;
-	if (x >= LINEWIDTH)
-	{
-	  x = 0;
-	  y++;
-	  if (y >= PAGEHEIGHT) break;
-	}
-      }
-    }
-    fclose (f);
-    maxy = y;
-  } else
-  {
+  if (!quiet) printf ("Cat's Eye Technologies' RUBE Interpreter v1.5\n");
+  f = fopen (argv[argc - 1], "r");
+  if (f == NULL) {
     printf ("Error : couldn't open '%s' for input.\n", argv[argc - 1]);
     exit (0);
   }
-
-  if (infile)
+  while (!feof (f))
   {
-    if (!(fi = fopen (argv[ia], "r")))
+    int cur = fgetc(f);
+    pg[y * LINEWIDTH + x].c = cur;
+    if (cur == '\n')
     {
-      printf ("Error : couldn't open '%s' for input.\n", argv[ia]);
-      exit (0);
+      pg[y * LINEWIDTH + x].c = ' ';
+      x = 0;
+      y++;
+      if (y >= PAGEHEIGHT) break;
+    } else
+    {
+      x++;
+      if (x > maxx) maxx = x;
+      if (x >= LINEWIDTH)
+      {
+        x = 0;
+        y++;
+        if (y >= PAGEHEIGHT) break;
+      }
     }
   }
-
-  if (outfile)
-  {
-    if (!(fo = fopen (argv[oa], "w")))
-    {
-      printf ("Error : couldn't open '%s' for output.\n", argv[oa]);
-      exit (0);
-    }
-  }
+  fclose (f);
+  maxy = y;
 
 #if __BORLANDC__
   setcbrk(1);
@@ -218,6 +191,7 @@ __asm
       {
 	for(x = 0; (x <= maxx) && (x <= SCREENWIDTH); x++)
 	{
+          int cur = pg[y * LINEWIDTH + x].c;
 	  putc(isprint(cur) ? cur : ' ', stdout);
 	}
 	printf("\n");
@@ -232,15 +206,9 @@ __asm
     {
       for (y=0; y<=(maxy); y++)
       {
-	switch (cur)
-	{
-	  case 0: case 1: case 2: case 3: case 4:
-	  case 5: case 6: case 7: case 8: case 9:
-	  case 10: case 11: case 12: case 13: case 14:
-	  case 15: case 16: case 17: case 18: case 19:
-	  case 20: case 21: case 22: case 23: case 24:
-	  case 25: case 26: case 27: case 28: case 29:
-	  case 30: case 31: case 32:
+        int cur = pg[y * LINEWIDTH + x].c;
+        int curv = pg[y * LINEWIDTH + x].v;
+        if (cur <= 32) {
 	    if (iscrate(curd(0,-1))) nex = curd(0,-1);    /* falling in from above */
 	    if (curd(0,-1) == '(') nex = '(';
 	    if (curd(0,-1) == ')') nex = ')';
@@ -351,7 +319,8 @@ __asm
 		bx++;
 	      }
 	    }
-	    break;
+        } else switch (cur)
+	{
 	  case '(':
 	    if (((curd(1,0) == '(') ||
 		 (curd(1,0) <= ' ') ||
@@ -479,6 +448,8 @@ __asm
     {
       for (y=0; y<=(maxy); y++)
       {
+        int cur = pg[y * LINEWIDTH + x].c;
+        int curv = pg[y * LINEWIDTH + x].v;
 	switch (cur)
 	{
 	  case '*':
@@ -550,13 +521,15 @@ __asm
 	    (curd(0,1)=='F')) nex = ' ';
       }
     }
-    if (deldur > 0)
+    if (interactive) {
+      char s[80];
+      fgets(s, 79, stdin);
+      if (s[0] == 'q') done = 1;
+    } else if (deldur > 0) {
       rube_delay (deldur);
+    }
     memcpy(pg, pg2, LINEWIDTH * PAGEHEIGHT * sizeof(cell));
   }
-  if (fi) fclose (fi);
-  if (fo) fclose (fo);
-  if (fs) fclose (fs);
   if (debug) printf ("%c[22;1H", 27);
 #if CURSOROFF
 __asm
@@ -567,6 +540,14 @@ __asm
 }
 #endif
   exit (0);
+}
+
+int curd(int dx, int dy)
+{
+  int r = (y+dy) * LINEWIDTH + (x+dx);
+  if (r < 0 || r >= LINEWIDTH * PAGEHEIGHT)
+    return 0;
+  return pg[r].c;
 }
 
 int isramp(char c)
