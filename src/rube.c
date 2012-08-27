@@ -1,5 +1,5 @@
 /*
- * rube.c v1.3, Feb 2010, Chris Pressey
+ * rube.c v1.4, Apr 2010, Chris Pressey
  * Interpreter/Debugger for the RUBE programming language
  *
  * (c)1997-2010 Cat's Eye Technologies.  All rights reserved.
@@ -36,6 +36,9 @@
  *	  added -q option.
  * v1.3: Feb 110 made compilable in POSIX and strict ANSI C89.
  *        screen is cleared before drawing initial playfield.
+ * v1.4: Apr 110 really made compilable in strict ANSI C89.
+ *        made command-line options case-senstive.
+ *        added GNU Makefile.
  */
 
 /********************************************************* #INCLUDE'S */
@@ -49,8 +52,6 @@
 #include <time.h>
 #if __BORLANDC__
   #include <dos.h>
-#else
-  #define stricmp strcasecmp
 #endif
 #ifdef _POSIX_C_SOURCE
   #include <sys/time.h>
@@ -105,6 +106,7 @@ int issupport(char c);
 int iscrate(char c);
 int ctoh(char c);
 char htoc(int i);
+int rube_delay(int msec);
 
 /******************************************************* MAIN PROGRAM */
 
@@ -141,14 +143,14 @@ __asm
   }
   for (i = 1; i < argc; i++)
   {
-    if (!stricmp(argv[i], "-d")) { debug = 0; }
-    if (!stricmp(argv[i], "-q")) { quiet = 1; debug = 0; }
-    if (!stricmp(argv[i], "-r")) { infile = 1; ia = i + 1; }
-    if (!stricmp(argv[i], "-w")) { outfile = 1; oa = i + 1; }
-    if (!stricmp(argv[i], "-y")) { deldur = atoi(argv[i + 1]); }
-    if (!stricmp(argv[i], "-f")) { debskip = atoi(argv[i + 1]); }
+    if (!strcmp(argv[i], "-d")) { debug = 0; }
+    if (!strcmp(argv[i], "-q")) { quiet = 1; debug = 0; }
+    if (!strcmp(argv[i], "-r")) { infile = 1; ia = i + 1; }
+    if (!strcmp(argv[i], "-w")) { outfile = 1; oa = i + 1; }
+    if (!strcmp(argv[i], "-y")) { deldur = atoi(argv[i + 1]); }
+    if (!strcmp(argv[i], "-f")) { debskip = atoi(argv[i + 1]); }
   }
-  if (!quiet) printf ("Cat's Eye Technologies RUBE Interpreter v1.3\n");
+  if (!quiet) printf ("Cat's Eye Technologies RUBE Interpreter v1.4\n");
   if ((f = fopen (argv[argc - 1], "r")) != NULL)             /*** Input Phase */
   {
     int x = 0, y = 0;
@@ -607,7 +609,7 @@ int rube_delay(int msec)
 {
 #if __BORLANDC__
   delay (msec);
-#elsif _POSIX_C_SOURCE
+#elif _POSIX_C_SOURCE
   struct timespec d;
 
   d.tv_sec = msec / 1000;
