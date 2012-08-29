@@ -2,10 +2,8 @@
  * rube.c v1.5, Jan 2011, Chris Pressey
  * Interpreter/Debugger for the RUBE programming language
  *
- * (c)1997-2011 Cat's Eye Technologies.  All rights reserved.
- *
- * Freely redistributable unmodified for non-commmercial purposes.
- * THIS "AS-IS" SOFTWARE COMES WITH NO WARRANTY, EXPRESS OR IMPLIED.
+ * (c)1997-2012 Chris Pressey, Cat's Eye Technologies.  All rights reserved.
+ * Covered under a BSD-style license; see LICENSE for more information.
  *
  * Usage :
  *
