@@ -95,6 +95,7 @@ int quiet = 0;
 
 /********************************************************* PROTOTYPES */
 
+int curd(int dx, int dy);
 int isramp(char c);
 int isblock(char c);
 int issupport(char c);
