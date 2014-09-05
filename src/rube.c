@@ -51,6 +51,8 @@
 #include <time.h>
 #if __BORLANDC__
   #include <dos.h>
+#else
+  #include <unistd.h>
 #endif
 #ifdef _POSIX_C_SOURCE
   #include <sys/time.h>
@@ -65,7 +67,6 @@
 #define SCREENHEIGHT 22
 
 #define nex          pg2[y * LINEWIDTH + x].c
-#define nexv         pg2[y * LINEWIDTH + x].v
 #define nexd(dx,dy)  pg2[(y+dy) * LINEWIDTH + (x+dx)].c
 
 #define shrink(s) s[strlen(s)-1]=0
@@ -73,36 +74,32 @@
 typedef struct cellstruct
 {
   char c;
-  signed long int v;
 } cell;
 
 /*************************************************** GLOBAL VARIABLES */
 
-cell pg[LINEWIDTH * PAGEHEIGHT]; /* playfield */
-cell pg2[LINEWIDTH * PAGEHEIGHT];/* playfield' */
+static cell pg[LINEWIDTH * PAGEHEIGHT]; /* playfield */
+static cell pg2[LINEWIDTH * PAGEHEIGHT];/* playfield' */
 
-cell *head = NULL;
-
-int x = 0, y = 0;                /* x and y looping */
-int dx = 1, dy = 0;              /* direction of looping */
-int debug = 1;                   /* flag: display ANSI debugging? */
-int interactive = 0;             /* flag: ask for input each frame? */
-int deldur = 0;                  /* debugging delay in milliseconds */
-int debskip = 1;		 /* frame skip in debug view */
-int debopos = 1;       		 /* output column in debugger */
-int frame = 1;
-int quiet = 0;
+static int x = 0, y = 0;      /* x and y looping */
+static int debug = 1;         /* flag: display ANSI debugging? */
+static int interactive = 0;   /* flag: ask for input each frame? */
+static int deldur = 0;        /* debugging delay in milliseconds */
+static int debskip = 1;       /* frame skip in debug view */
+static int debopos = 1;       /* output column in debugger */
+static int frame = 1;
+static int quiet = 0;
 
 /********************************************************* PROTOTYPES */
 
-int curd(int dx, int dy);
-int isramp(char c);
-int isblock(char c);
-int issupport(char c);
-int iscrate(char c);
-int ctoh(char c);
-char htoc(int i);
-int rube_delay(int msec);
+int curd(int, int);
+int isramp(char);
+int isblock(char);
+int issupport(char);
+int iscrate(char);
+int ctoh(char);
+char htoc(int);
+void rube_delay(int);
 
 /******************************************************* MAIN PROGRAM */
 
@@ -206,7 +203,6 @@ __asm
       for (y=0; y<=(maxy); y++)
       {
         int cur = pg[y * LINEWIDTH + x].c;
-        int curv = pg[y * LINEWIDTH + x].v;
         if (cur <= 32) {
 	    if (iscrate(curd(0,-1))) nex = curd(0,-1);    /* falling in from above */
 	    if (curd(0,-1) == '(') nex = '(';
@@ -248,10 +244,10 @@ __asm
 	    {
 	      if (iscrate(curd(1,0)) && iscrate(curd(2,0)))
 	      {
-		int i;
-		i = ctoh(curd(2,0)) - ctoh(curd(1,0));
-		while (i < 0) i += 16;
-		nex = htoc(i);
+		int z;
+		z = ctoh(curd(2,0)) - ctoh(curd(1,0));
+		while (z < 0) z += 16;
+		nex = htoc(z);
 	      }
 	    }
 
@@ -259,10 +255,10 @@ __asm
 	    {
 	      if (iscrate(curd(-1,0)) && iscrate(curd(-2,0)))
 	      {
-		int i;
-		i = ctoh(curd(-2,0)) - ctoh(curd(-1,0));
-		while (i < 0) i += 16;
-		nex = htoc(i);
+		int z;
+		z = ctoh(curd(-2,0)) - ctoh(curd(-1,0));
+		while (z < 0) z += 16;
+		nex = htoc(z);
 	      }
 	    }
 
@@ -448,7 +444,6 @@ __asm
       for (y=0; y<=(maxy); y++)
       {
         int cur = pg[y * LINEWIDTH + x].c;
-        int curv = pg[y * LINEWIDTH + x].v;
 	switch (cur)
 	{
 	  case '*':
@@ -541,9 +536,9 @@ __asm
   exit (0);
 }
 
-int curd(int dx, int dy)
+int curd(int zdx, int zdy)
 {
-  int r = (y+dy) * LINEWIDTH + (x+dx);
+  int r = (y+zdy) * LINEWIDTH + (x+zdx);
   if (r < 0 || r >= LINEWIDTH * PAGEHEIGHT)
     return 0;
   return pg[r].c;
@@ -585,7 +580,7 @@ char htoc(int i)
   if((i>=0) && (i<=9)) return ((char)(i+'0')); else return ((char)(i+'a')-10);
 }
 
-int rube_delay(int msec)
+void rube_delay(int msec)
 {
 #if __BORLANDC__
   delay (msec);

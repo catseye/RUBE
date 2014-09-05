@@ -1,7 +1,4 @@
-syntax: regexp
-
-^src/rube
-
 syntax: glob
 
+bin
 *.o
