@@ -4,6 +4,7 @@ PROG=bin/rube$(EXE)
 CC?=gcc
 O?=.o
 EXE?=
+RM_F?=rm -f
 
 WARNS=	-W -Wall -Wstrict-prototypes -Wmissing-prototypes \
 	-Wpointer-arith	-Wno-uninitialized -Wreturn-type -Wcast-qual \
@@ -27,18 +28,14 @@ OBJS=$(OBJ)
 
 all: $(PROG)
 
-bin/.exists:
-	mkdir -p bin
-	touch bin/.exists
-
-$(PROG): bin/.exists $(OBJS)
+$(PROG): $(OBJS)
 	$(CC) $(OBJS) -o $(PROG) $(LIBS)
 
 $(OBJ): src/rube.c
 	$(CC) $(CFLAGS) -c src/rube.c -o $(OBJ)
 
 clean:
-	rm -f $(OBJS)
+	$(RM_F) $(OBJS)
 
 distclean:
-	rm -f $(PROG)
+	$(RM_F) $(PROG)
