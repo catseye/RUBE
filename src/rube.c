@@ -49,9 +49,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
-#if __BORLANDC__
+
+#if defined(__BORLANDC__) || defined(__DJGPP__)
+  #define MSDOS 1
+#endif
+#ifdef MSDOS
   #include <dos.h>
-#else
+#endif
+#ifdef __GNUC__
   #include <unistd.h>
 #endif
 #ifdef _POSIX_C_SOURCE
@@ -170,7 +175,7 @@ __asm
   fclose (f);
   maxy = y;
 
-#if __BORLANDC__
+#if MSDOS
   setcbrk(1);
 #endif
 
@@ -582,7 +587,7 @@ char htoc(int i)
 
 void rube_delay(int msec)
 {
-#if __BORLANDC__
+#if MSDOS
   delay (msec);
 #elif _POSIX_C_SOURCE
   struct timespec d;

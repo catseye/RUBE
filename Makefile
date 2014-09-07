@@ -1,9 +1,8 @@
 # GNU Makefile for RUBE.
 
-PROG=bin/rube$(EXE)
+PROG=bin/rube
 CC?=gcc
 O?=.o
-EXE?=
 RM_F?=rm -f
 
 WARNS=	-W -Wall -Wstrict-prototypes -Wmissing-prototypes \
@@ -11,10 +10,13 @@ WARNS=	-W -Wall -Wstrict-prototypes -Wmissing-prototypes \
 	-Wwrite-strings -Wswitch -Wshadow -Wcast-align -Wchar-subscripts \
 	-Winline -Wnested-externs -Wredundant-decls
 
-ifdef ANSI
-  CFLAGS+= -ansi -pedantic -D_BSD_SOURCE
+ifdef DJGPP
 else
-  CFLAGS+= -std=c99 -D_POSIX_C_SOURCE=200809L
+  ifdef ANSI
+    CFLAGS+= -ansi -pedantic
+  else
+    CFLAGS+= -std=c99 -D_POSIX_C_SOURCE=200809L
+  endif
 endif
 
 CFLAGS+= ${WARNS} ${EXTRA_CFLAGS}
