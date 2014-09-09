@@ -28,9 +28,9 @@
  * v1.00: May/Jun 97 original, minimal implementation
  * v1.01: Jun 97 added K gate, AV swinches, + packer, - unpacker
  * v1.02: Jul 97 fixed bug in WM winches, - unpacker, added . and C
- *	  doubled height of playfield and improved debugger.
- *	  added Ben Olmstead's cursor-turner-offer-thingy.
- *	  added -q option.
+ *        doubled height of playfield and improved debugger.
+ *        added Ben Olmstead's cursor-turner-offer-thingy.
+ *        added -q option.
  * v1.3: Feb 110 made compilable in POSIX and strict ANSI C89.
  *        screen is cleared before drawing initial playfield.
  * v1.4: Apr 110 really made compilable in strict ANSI C89.
@@ -190,12 +190,12 @@ __asm
       printf ("%c[1;1H", 27);
       for(y = 0; (y <= maxy) && (y <= SCREENHEIGHT); y++)
       {
-	for(x = 0; (x <= maxx) && (x <= SCREENWIDTH); x++)
-	{
+        for(x = 0; (x <= maxx) && (x <= SCREENWIDTH); x++)
+        {
           int cur = pg[y * LINEWIDTH + x].c;
-	  putc(isprint(cur) ? cur : ' ', stdout);
-	}
-	printf("\n");
+          putc(isprint(cur) ? cur : ' ', stdout);
+        }
+        printf("\n");
       }
     } else
     {
@@ -209,238 +209,238 @@ __asm
       {
         int cur = pg[y * LINEWIDTH + x].c;
         if (cur <= 32) {
-	    if (iscrate(curd(0,-1))) nex = curd(0,-1);    /* falling in from above */
-	    if (curd(0,-1) == '(') nex = '(';
-	    if (curd(0,-1) == ')') nex = ')';
+            if (iscrate(curd(0,-1))) nex = curd(0,-1);    /* falling in from above */
+            if (curd(0,-1) == '(') nex = '(';
+            if (curd(0,-1) == ')') nex = ')';
 
-	    if (curd(1,1) == 'W') nex = curd(2,2);
-	    if (curd(-1,1) == 'W') nex = curd(-2,2);
+            if (curd(1,1) == 'W') nex = curd(2,2);
+            if (curd(-1,1) == 'W') nex = curd(-2,2);
 
-	    if ((curd(1,1) == 'V') && iscrate(curd(2,1))) nex = curd(2,1);
-	    if ((curd(-1,1) == 'V') && iscrate(curd(-2,1))) nex = curd(-2,1);
+            if ((curd(1,1) == 'V') && iscrate(curd(2,1))) nex = curd(2,1);
+            if ((curd(-1,1) == 'V') && iscrate(curd(-2,1))) nex = curd(-2,1);
 
-	    if (curd(1,-1) == 'M') nex = curd(2,-2);
-	    if (curd(-1,-1) == 'M') nex = curd(-2,-2);
+            if (curd(1,-1) == 'M') nex = curd(2,-2);
+            if (curd(-1,-1) == 'M') nex = curd(-2,-2);
 
-	    if ((curd(1,-1) == 'A') && iscrate(curd(2,-1))) nex = curd(2,-1);
-	    if ((curd(-1,-1) == 'A') && iscrate(curd(-2,-1))) nex = curd(-2,-1);
+            if ((curd(1,-1) == 'A') && iscrate(curd(2,-1))) nex = curd(2,-1);
+            if ((curd(-1,-1) == 'A') && iscrate(curd(-2,-1))) nex = curd(-2,-1);
 
-	    if (curd(0,-1) == '~') nex = '~';
-	    if ((curd(-1,0) == '~') && (issupport(curd(-1,1)))) nex = '~';
-	    if ((curd(1,0) == '~') && (issupport(curd(1,1)))) nex = '~';
+            if (curd(0,-1) == '~') nex = '~';
+            if ((curd(-1,0) == '~') && (issupport(curd(-1,1)))) nex = '~';
+            if ((curd(1,0) == '~') && (issupport(curd(1,1)))) nex = '~';
 
-	    if (curd(1,-1) == '+')
-	    {
-	      if (iscrate(curd(1,0)) && iscrate(curd(2,0)))
-	      {
-		nex = htoc((ctoh(curd(1,0))+ctoh(curd(2,0))) % 16);
-	      }
-	    }
+            if (curd(1,-1) == '+')
+            {
+              if (iscrate(curd(1,0)) && iscrate(curd(2,0)))
+              {
+                nex = htoc((ctoh(curd(1,0))+ctoh(curd(2,0))) % 16);
+              }
+            }
 
-	    if (curd(-1,-1) == '+')
-	    {
-	      if (iscrate(curd(-1,0)) && iscrate(curd(-2,0)))
-	      {
-		nex = htoc((ctoh(curd(-1,0))+ctoh(curd(-2,0))) % 16);
-	      }
-	    }
+            if (curd(-1,-1) == '+')
+            {
+              if (iscrate(curd(-1,0)) && iscrate(curd(-2,0)))
+              {
+                nex = htoc((ctoh(curd(-1,0))+ctoh(curd(-2,0))) % 16);
+              }
+            }
 
-	    if (curd(1,-1) == '-')
-	    {
-	      if (iscrate(curd(1,0)) && iscrate(curd(2,0)))
-	      {
-		int z;
-		z = ctoh(curd(2,0)) - ctoh(curd(1,0));
-		while (z < 0) z += 16;
-		nex = htoc(z);
-	      }
-	    }
+            if (curd(1,-1) == '-')
+            {
+              if (iscrate(curd(1,0)) && iscrate(curd(2,0)))
+              {
+                int z;
+                z = ctoh(curd(2,0)) - ctoh(curd(1,0));
+                while (z < 0) z += 16;
+                nex = htoc(z);
+              }
+            }
 
-	    if (curd(-1,-1) == '-')
-	    {
-	      if (iscrate(curd(-1,0)) && iscrate(curd(-2,0)))
-	      {
-		int z;
-		z = ctoh(curd(-2,0)) - ctoh(curd(-1,0));
-		while (z < 0) z += 16;
-		nex = htoc(z);
-	      }
-	    }
+            if (curd(-1,-1) == '-')
+            {
+              if (iscrate(curd(-1,0)) && iscrate(curd(-2,0)))
+              {
+                int z;
+                z = ctoh(curd(-2,0)) - ctoh(curd(-1,0));
+                while (z < 0) z += 16;
+                nex = htoc(z);
+              }
+            }
 
-	    if ((curd(1,-1) == 'K') && (iscrate(curd(1,-2))))
-	    {
-	      if(ctoh(curd(1,-2)) < ctoh(curd(1,0))) nex = curd(1,-2);
-	    }
+            if ((curd(1,-1) == 'K') && (iscrate(curd(1,-2))))
+            {
+              if(ctoh(curd(1,-2)) < ctoh(curd(1,0))) nex = curd(1,-2);
+            }
 
-	    if ((curd(-1,-1) == 'K') && (iscrate(curd(-1,-2))))
-	    {
-	      if(ctoh(curd(-1,-2)) >= ctoh(curd(-1,0))) nex = curd(-1,-2);
-	    }
+            if ((curd(-1,-1) == 'K') && (iscrate(curd(-1,-2))))
+            {
+              if(ctoh(curd(-1,-2)) >= ctoh(curd(-1,0))) nex = curd(-1,-2);
+            }
 
-	    if ((iscrate(curd(-1,0))) && (curd(-1,1) == '>')) nex = curd(-1,0);
-	    if ((iscrate(curd(1,0))) && (curd(1,1) == '<')) nex = curd(1,0);
-	    if (curd(0,-1) == ':') nex = curd(0,-2);
-	    if ((curd(0,-1) == ';') && (iscrate(curd(0,-2)))) nex = curd(0,-2);
-	    if ((curd(0,1) == '.') && (iscrate(curd(0,2)))) nex = curd(0,2);
-	    if ((curd(-1,0) == '(') && (curd(1,0) == ')')) /* collision */
-	    {
-	      nex = ' ';
-	    } else
-	    {
-	      if ((curd(-1,0) == '(') && (issupport(curd(-1,1)))) nex = '(';
-	      if ((curd(1,0) == ')') && (issupport(curd(1,1)))) nex = ')';
-	      if ((curd(0,1) == '/') || (curd(0,1) == '\\'))
-	      {
-		if ((curd(-1,1) == '(') && (issupport(curd(-1,2)))) nex = '(';
-		if ((curd(1,1) == ')') && (issupport(curd(1,2)))) nex = ')';
-	      }
-	    }
-	    if (iscrate(curd(-1,0)))
-	    { /* shift crates */
-	      int bx=-1;
-	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	      {
-		if (curd(bx-1,0) == '(')
-		{
-		  nex = curd(-1,0);
-		}
-		bx--;
-	      }
-	    }
-	    if (iscrate(curd(1,0)))
-	    {
-	      int bx=1;
-	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	      {
-		if (curd(bx+1,0) == ')')
-		{
-		  nex = curd(1,0);
-		}
-		bx++;
-	      }
-	    }
+            if ((iscrate(curd(-1,0))) && (curd(-1,1) == '>')) nex = curd(-1,0);
+            if ((iscrate(curd(1,0))) && (curd(1,1) == '<')) nex = curd(1,0);
+            if (curd(0,-1) == ':') nex = curd(0,-2);
+            if ((curd(0,-1) == ';') && (iscrate(curd(0,-2)))) nex = curd(0,-2);
+            if ((curd(0,1) == '.') && (iscrate(curd(0,2)))) nex = curd(0,2);
+            if ((curd(-1,0) == '(') && (curd(1,0) == ')')) /* collision */
+            {
+              nex = ' ';
+            } else
+            {
+              if ((curd(-1,0) == '(') && (issupport(curd(-1,1)))) nex = '(';
+              if ((curd(1,0) == ')') && (issupport(curd(1,1)))) nex = ')';
+              if ((curd(0,1) == '/') || (curd(0,1) == '\\'))
+              {
+                if ((curd(-1,1) == '(') && (issupport(curd(-1,2)))) nex = '(';
+                if ((curd(1,1) == ')') && (issupport(curd(1,2)))) nex = ')';
+              }
+            }
+            if (iscrate(curd(-1,0)))
+            { /* shift crates */
+              int bx=-1;
+              while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+              {
+                if (curd(bx-1,0) == '(')
+                {
+                  nex = curd(-1,0);
+                }
+                bx--;
+              }
+            }
+            if (iscrate(curd(1,0)))
+            {
+              int bx=1;
+              while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+              {
+                if (curd(bx+1,0) == ')')
+                {
+                  nex = curd(1,0);
+                }
+                bx++;
+              }
+            }
         } else switch (cur)
-	{
-	  case '(':
-	    if (((curd(1,0) == '(') ||
-		 (curd(1,0) <= ' ') ||
-		 (curd(0,1) <= ' ') ||
-		 (curd(0,1) == '('))) nex = ' ';
-	    if (isramp(curd(0,1))) nex = ' ';
-	    if (isramp(curd(1,0))) nex = ' ';
-	    if (isramp(curd(-1,0))) nex = ' ';
-	    if ((isblock(curd(1,0))) ||
-		(curd(1,-1) == ',') ||
-		(curd(1,0) == '*')) nex = ')';
-	    if (iscrate(curd(1,0)))
-	    {
-	      int bx=1;
-	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	      {
-		if (isblock(curd(bx+1,0)))
-		{
-		  nex = ')';
-		}
-		bx++;
-	      }
-	    }
-	    break;
-	  case ')':
-	    if (((curd(-1,0) == ')') ||
-		 (curd(-1,0) <= ' ') ||
-		 (curd(0,1) <= ' ') ||
-		 (curd(0,1) == ')'))) nex = ' ';
-	    if (isramp(curd(0,1))) nex = ' ';
-	    if (isramp(curd(1,0))) nex = ' ';
-	    if (isramp(curd(-1,0))) nex = ' ';
-	    if ((isblock(curd(-1,0))) ||
-		(curd(-1,-1) == ',') ||
-		(curd(-1,0) == '*')) nex = '(';
-	    if (iscrate(curd(-1,0)))
-	    {
-	      int bx=-1;
-	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	      {
-		if (isblock(curd(bx-1,0)))
-		{
-		  nex = '(';
-		}
-		bx--;
-	      }
-	    }
-	    break;
-	  case 'O':
-	    if ((iscrate(curd(0,-1))) && (iscrate(curd(0,-2))))
-	    {
-	      int d;
+        {
+          case '(':
+            if (((curd(1,0) == '(') ||
+                 (curd(1,0) <= ' ') ||
+                 (curd(0,1) <= ' ') ||
+                 (curd(0,1) == '('))) nex = ' ';
+            if (isramp(curd(0,1))) nex = ' ';
+            if (isramp(curd(1,0))) nex = ' ';
+            if (isramp(curd(-1,0))) nex = ' ';
+            if ((isblock(curd(1,0))) ||
+                (curd(1,-1) == ',') ||
+                (curd(1,0) == '*')) nex = ')';
+            if (iscrate(curd(1,0)))
+            {
+              int bx=1;
+              while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+              {
+                if (isblock(curd(bx+1,0)))
+                {
+                  nex = ')';
+                }
+                bx++;
+              }
+            }
+            break;
+          case ')':
+            if (((curd(-1,0) == ')') ||
+                 (curd(-1,0) <= ' ') ||
+                 (curd(0,1) <= ' ') ||
+                 (curd(0,1) == ')'))) nex = ' ';
+            if (isramp(curd(0,1))) nex = ' ';
+            if (isramp(curd(1,0))) nex = ' ';
+            if (isramp(curd(-1,0))) nex = ' ';
+            if ((isblock(curd(-1,0))) ||
+                (curd(-1,-1) == ',') ||
+                (curd(-1,0) == '*')) nex = '(';
+            if (iscrate(curd(-1,0)))
+            {
+              int bx=-1;
+              while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+              {
+                if (isblock(curd(bx-1,0)))
+                {
+                  nex = '(';
+                }
+                bx--;
+              }
+            }
+            break;
+          case 'O':
+            if ((iscrate(curd(0,-1))) && (iscrate(curd(0,-2))))
+            {
+              int d;
 
-	      d = ctoh(curd(0,-1)) + ctoh(curd(0,-2)) * 16;
-	      if (curd(0, 1) == 'b')
-	      {
-		if (debug)
-		{
-		  char s[80];
-		  printf ("%c[%d;%dH", 27, 25, debopos);
-		  sprintf(s, "%d ", (int)d);
-		  debopos += strlen(s);
-		  if (debopos > SCREENWIDTH)
-		  {
-		    debopos = 1;
-		    printf ("%c[%d;%dH%c[K", 27, 25, 1, 27);
-		    debopos += strlen(s);
-		  }
-		  printf("%s", s);
-		} else
-		{
-		  printf("%d ", (int)d);
-		}
-	      }
-	      if (curd(0, 1) == 'c')
-	      {
-		if (debug)
-		{
-		  printf ("%c[%d;%dH", 27, 25, debopos++);
-		  if (debopos > SCREENWIDTH)
-		  {
-		    debopos = 1;
-		    printf ("%c[%d;%dH%c[K", 27, 25, 1, 27);
-		    debopos++;
-		  }
-		  printf ("%c", (char)d);
-		} else
-		{
-		  putc((char)d, stdout);
-		}
-	      }
-	    }
-	  case 'A':
-	    if (iscrate(curd(-1,0))  || iscrate(curd(1,0))) nex = 'V'; else nex = cur;
-	    break;
-	  case 'V':
-	    if (iscrate(curd(-1,0))  || iscrate(curd(1,0))) nex = 'A'; else nex = cur;
-	    break;
-	  default: nex = cur;
-	}
-	if (iscrate(cur))
-	{
-	  if (issupport(curd(0,1))) nex = cur; else nex = ' ';
-	  if ((curd(1,0) <= ' ') && (curd(0,1) == '>')) nex = ' ';
-	  if ((curd(-1,0) <= ' ') && (curd(0,1) == '<')) nex = ' ';
-	  if ((curd(1,-1) == 'W') && (curd(2,-2) == cur)) nex = ' ';
+              d = ctoh(curd(0,-1)) + ctoh(curd(0,-2)) * 16;
+              if (curd(0, 1) == 'b')
+              {
+                if (debug)
+                {
+                  char s[80];
+                  printf ("%c[%d;%dH", 27, 25, debopos);
+                  sprintf(s, "%d ", (int)d);
+                  debopos += strlen(s);
+                  if (debopos > SCREENWIDTH)
+                  {
+                    debopos = 1;
+                    printf ("%c[%d;%dH%c[K", 27, 25, 1, 27);
+                    debopos += strlen(s);
+                  }
+                  printf("%s", s);
+                } else
+                {
+                  printf("%d ", (int)d);
+                }
+              }
+              if (curd(0, 1) == 'c')
+              {
+                if (debug)
+                {
+                  printf ("%c[%d;%dH", 27, 25, debopos++);
+                  if (debopos > SCREENWIDTH)
+                  {
+                    debopos = 1;
+                    printf ("%c[%d;%dH%c[K", 27, 25, 1, 27);
+                    debopos++;
+                  }
+                  printf ("%c", (char)d);
+                } else
+                {
+                  putc((char)d, stdout);
+                }
+              }
+            }
+          case 'A':
+            if (iscrate(curd(-1,0))  || iscrate(curd(1,0))) nex = 'V'; else nex = cur;
+            break;
+          case 'V':
+            if (iscrate(curd(-1,0))  || iscrate(curd(1,0))) nex = 'A'; else nex = cur;
+            break;
+          default: nex = cur;
+        }
+        if (iscrate(cur))
+        {
+          if (issupport(curd(0,1))) nex = cur; else nex = ' ';
+          if ((curd(1,0) <= ' ') && (curd(0,1) == '>')) nex = ' ';
+          if ((curd(-1,0) <= ' ') && (curd(0,1) == '<')) nex = ' ';
+          if ((curd(1,-1) == 'W') && (curd(2,-2) == cur)) nex = ' ';
           if ((curd(-1,-1) == 'W') && (curd(2,-2) == cur)) nex = ' ';
           if ((curd(1,1) == 'M') && (curd(2,2) == cur)) nex = ' ';
-	  if ((curd(-1,1) == 'M') && (curd(-2,2) == cur)) nex = ' ';
-	  if (curd(1,0) == 'V') nex = ' ';
-	  if (curd(-1,0) == 'V') nex = ' ';
-	  if (curd(1,0) == 'A') nex = ' ';
-	  if (curd(-1,0) == 'A') nex = ' ';
-	  if (iscrate(curd(-1,0)) && ((curd(-1,-1) == '+')
-	      || (curd(-1,-1) == '-'))) nex = ' ';
-	  if (iscrate(curd(1,0)) && ((curd(1,-1) == '+')
-	      || (curd(1,-1) == '-'))) nex = ' ';
-	  if ((iscrate(curd(-1,0)) || iscrate(curd(1,0))) && ((curd(0,-1) == '+')
-	      || (curd(0,-1) == '-'))) nex = ' ';
-	}
+          if ((curd(-1,1) == 'M') && (curd(-2,2) == cur)) nex = ' ';
+          if (curd(1,0) == 'V') nex = ' ';
+          if (curd(-1,0) == 'V') nex = ' ';
+          if (curd(1,0) == 'A') nex = ' ';
+          if (curd(-1,0) == 'A') nex = ' ';
+          if (iscrate(curd(-1,0)) && ((curd(-1,-1) == '+')
+              || (curd(-1,-1) == '-'))) nex = ' ';
+          if (iscrate(curd(1,0)) && ((curd(1,-1) == '+')
+              || (curd(1,-1) == '-'))) nex = ' ';
+          if ((iscrate(curd(-1,0)) || iscrate(curd(1,0))) && ((curd(0,-1) == '+')
+              || (curd(0,-1) == '-'))) nex = ' ';
+        }
       }
     }
     /* fix nex array */
@@ -449,75 +449,75 @@ __asm
       for (y=0; y<=(maxy); y++)
       {
         int cur = pg[y * LINEWIDTH + x].c;
-	switch (cur)
-	{
-	  case '*':
-	    if (curd(-1,0) == ')') nex = ' ';
-	    if (curd(1,0) == '(') nex = ' ';
-	    break;
-	  case 'O':
-	    if ((iscrate(curd(0,-1))) && (iscrate(curd(0,-2))))
-	    {
-	      nexd(0,-1)=' ';
-	      nexd(0,-2)=' ';
-	    }
-	    break;
-	}
-	if (iscrate(cur))
-	{
-	  if (curd(1,0) == ')')
-	  {
-	    int bx=0; int flag=0;
-	    while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	    {
-	      if (curd(bx-1,0) <= ' ')
-	      {
-		flag = 1;
-	      }
-	      bx--;
-	    }
-	    if (flag)
-	    {
-	      bx=0;
-	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	      {
-		nexd(bx-1,0) = curd(bx,0);
-		bx--;
-	      }
-	      nex = ')'; nexd(1,0) = ' ';
-	    }
-	  }
-	  if (curd(-1,0) == '(')
-	  {
-	    int bx=0; int flag=0;
-	    while (iscrate(curd(bx,0)) && (issupport(curd(bx,1))))
-	    {
-	      if (curd(bx+1,0) <= ' ')
-	      {
-		flag=1;
-	      }
-	      bx++;
-	    }
-	    if (flag)
-	    {
-	      bx=0;
-	      while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
-	      {
-		nexd(bx+1,0) = curd(bx,0);
-		bx++;
-	      }
-	      nex = '('; nexd(-1,0)= ' ';
-	    }
-	  }
-	  if ((curd(-1,0)=='C') ||
-	      (curd(1,0)=='C') ||
-	      (curd(0,-1)=='C') ||
-	      (curd(0,1)=='C')) nex = ' ';
-	}
-	if ((curd(-1,0)=='F') ||
-	    (curd(1,0)=='F') ||
-	    (curd(0,-1)=='F') ||
-	    (curd(0,1)=='F')) nex = ' ';
+        switch (cur)
+        {
+          case '*':
+            if (curd(-1,0) == ')') nex = ' ';
+            if (curd(1,0) == '(') nex = ' ';
+            break;
+          case 'O':
+            if ((iscrate(curd(0,-1))) && (iscrate(curd(0,-2))))
+            {
+              nexd(0,-1)=' ';
+              nexd(0,-2)=' ';
+            }
+            break;
+        }
+        if (iscrate(cur))
+        {
+          if (curd(1,0) == ')')
+          {
+            int bx=0; int flag=0;
+            while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+            {
+              if (curd(bx-1,0) <= ' ')
+              {
+                flag = 1;
+              }
+              bx--;
+            }
+            if (flag)
+            {
+              bx=0;
+              while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+              {
+                nexd(bx-1,0) = curd(bx,0);
+                bx--;
+              }
+              nex = ')'; nexd(1,0) = ' ';
+            }
+          }
+          if (curd(-1,0) == '(')
+          {
+            int bx=0; int flag=0;
+            while (iscrate(curd(bx,0)) && (issupport(curd(bx,1))))
+            {
+              if (curd(bx+1,0) <= ' ')
+              {
+                flag=1;
+              }
+              bx++;
+            }
+            if (flag)
+            {
+              bx=0;
+              while ((iscrate(curd(bx,0))) && (issupport(curd(bx,1))))
+              {
+                nexd(bx+1,0) = curd(bx,0);
+                bx++;
+              }
+              nex = '('; nexd(-1,0)= ' ';
+            }
+          }
+          if ((curd(-1,0)=='C') ||
+              (curd(1,0)=='C') ||
+              (curd(0,-1)=='C') ||
+              (curd(0,1)=='C')) nex = ' ';
+        }
+        if ((curd(-1,0)=='F') ||
+            (curd(1,0)=='F') ||
+            (curd(0,-1)=='F') ||
+            (curd(0,1)=='F')) nex = ' ';
       }
     }
     if (interactive) {
@@ -562,17 +562,17 @@ int isblock(char c)
 int issupport(char c)
 {
   return ((c=='=')||iscrate(c)||(c=='(')||(c==')')||(c==';')||
-	  (c=='/')||(c=='\\')||(c==':')||(c=='*')||(c==',')||
-	  (c=='>')||(c=='<')||(c=='O')||(c=='W')||(c=='M')||
-	  (c=='A')||(c=='V')||(c=='~')||(c=='.'));
+          (c=='/')||(c=='\\')||(c==':')||(c=='*')||(c==',')||
+          (c=='>')||(c=='<')||(c=='O')||(c=='W')||(c=='M')||
+          (c=='A')||(c=='V')||(c=='~')||(c=='.'));
 }
 
 int iscrate(char c)
 {
   return ((c=='0')||(c=='1')||(c=='2')||(c=='3')||
-	  (c=='4')||(c=='5')||(c=='6')||(c=='7')||
-	  (c=='8')||(c=='9')||(c=='a')||(c=='b')||
-	  (c=='c')||(c=='d')||(c=='e')||(c=='f'));
+          (c=='4')||(c=='5')||(c=='6')||(c=='7')||
+          (c=='8')||(c=='9')||(c=='a')||(c=='b')||
+          (c=='c')||(c=='d')||(c=='e')||(c=='f'));
 }
 
 int ctoh(char c)
