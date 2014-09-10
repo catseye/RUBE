@@ -42,8 +42,6 @@
 
 /********************************************************* #INCLUDE'S */
 
-#define CURSORON
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -55,6 +53,7 @@
 #endif
 #ifdef MSDOS
   #include <dos.h>
+  #include <conio.h>  /* for _setcursortype() and kbhit() */
 #endif
 #ifdef __GNUC__
   #include <unistd.h>
@@ -115,20 +114,6 @@ int main (int argc, char **argv)
   int done=0;
   int maxy=0; int maxx=0;
 
-#ifdef CURSOROFF
-short signed oldcursor;
-__asm
-{
-  mov al,0x03
-  mov bl,0x00
-  int 0x10
-  mov oldcursor,cx
-  mov al,0x01
-  mov cx,0x0001
-  int 0x10
-}
-#endif
-
   srand (time (0));
 
   if (argc < 2)
@@ -176,7 +161,8 @@ __asm
   maxy = y;
 
 #if MSDOS
-  setcbrk(1);
+  setcbrk(1);  /* doesn't seem to work for me under DJGPP and FreeDOS... */
+  _setcursortype(_NOCURSOR);
 #endif
 
   if (debug)
@@ -530,13 +516,8 @@ __asm
     memcpy(pg, pg2, LINEWIDTH * PAGEHEIGHT * sizeof(cell));
   }
   if (debug) printf ("%c[22;1H", 27);
-#if CURSOROFF
-__asm
-{
-  mov al,0x01
-  mov cx,oldcursor
-  int 0x10
-}
+#if MSDOS
+  _setcursortype(_NORMALCURSOR);
 #endif
   exit (0);
 }
