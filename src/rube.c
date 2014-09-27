@@ -167,7 +167,7 @@ int main (int argc, char **argv)
 
   if (debug)
   {
-    printf ("%c[2J", 27);
+    printf ("%c[1;1H%c[2J", 27, 27);
   }
   while (!done)          /*** Intepreting Phase */
   {
