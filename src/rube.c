@@ -48,7 +48,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#if defined(__BORLANDC__) || defined(__DJGPP__)
+#if defined(__TURBOC__) || defined(__BORLANDC__) || defined(__DJGPP__)
   #define MSDOS 1
 #endif
 #ifdef MSDOS
@@ -161,7 +161,6 @@ int main (int argc, char **argv)
   maxy = y;
 
 #if MSDOS
-  setcbrk(1);  /* doesn't seem to work for me under DJGPP and FreeDOS... */
   _setcursortype(_NOCURSOR);
 #endif
 
@@ -512,6 +511,13 @@ int main (int argc, char **argv)
       if (s[0] == 'q') done = 1;
     } else if (deldur > 0) {
       rube_delay (deldur);
+#ifdef MSDOS
+      if (kbhit()) {
+        char c;
+        c = getch();
+        if (c == 27) done = 1;
+      }
+#endif
     }
     memcpy(pg, pg2, LINEWIDTH * PAGEHEIGHT * sizeof(cell));
   }
