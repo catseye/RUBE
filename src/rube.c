@@ -509,8 +509,10 @@ int main (int argc, char **argv)
       char s[80];
       fgets(s, 79, stdin);
       if (s[0] == 'q') done = 1;
-    } else if (deldur > 0) {
-      rube_delay (deldur);
+    } else {
+      if (deldur > 0) {
+        rube_delay (deldur);
+      }
 #ifdef MSDOS
       if (kbhit()) {
         char c;
