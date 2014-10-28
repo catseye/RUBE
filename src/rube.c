@@ -21,6 +21,7 @@
  *         Load ANSI.SYS or compatible ANSI driver before using.
  * Windows: tested with GCC 4.8.3 under Cygwin.
  * Linux: tested with GCC 4.8.2 under Ubuntu 14.04 LTS.
+ * NetBSD: tested with GCC 4.5.3 under NetBSD 6.1.4
  * AmigaOS: tested with DICE C 3.16 under AmigaOS 1.3.
  *
  * History :
