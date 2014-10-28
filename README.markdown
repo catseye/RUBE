@@ -1,9 +1,9 @@
 RUBE
 ====
 
-Language version 1.5, revision 2012.0826.
+Distribution version 1.6.
 
-©1997-2012 Chris Pressey, Cat's Eye Technologies.  All rights reserved.
+©1997-2014 Chris Pressey, Cat's Eye Technologies.  All rights reserved.
 Distributed under a BSD-style license; see the file LICENSE.
 
 What is RUBE?

@@ -5,7 +5,7 @@ after the "Report on the Programming Language Haskell 98" license:
 
 -----------------------------------------------------------------------------
 
-  Copyright (c)1997-2012 Chris Pressey, Cat's Eye Technologies.
+  Copyright (c)1997-2014 Chris Pressey, Cat's Eye Technologies.
 
   The authors intend this Report to belong to the entire RUBE
   community, and so we grant permission to copy and distribute it for
@@ -21,7 +21,7 @@ All source code for the reference interpreter is covered by this license:
 
 -----------------------------------------------------------------------------
 
-Copyright (c)1997-2012 Chris Pressey, Cat's Eye Technologies.
+Copyright (c)1997-2014 Chris Pressey, Cat's Eye Technologies.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

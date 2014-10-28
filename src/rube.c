@@ -1,8 +1,8 @@
 /*
- * rube.c v1.5, Jan 2011, Chris Pressey
+ * rube.c v1.6, Oct 2014, Chris Pressey
  * Interpreter/Debugger for the RUBE programming language
  *
- * (c)1997-2012 Chris Pressey, Cat's Eye Technologies.  All rights reserved.
+ * (c)1997-2014 Chris Pressey, Cat's Eye Technologies.  All rights reserved.
  * Covered under a BSD-style license; see LICENSE for more information.
  *
  * Usage :
@@ -17,10 +17,10 @@
  *
  * Compilation :
  *
- * MS-DOS: tested with Borland C++ v3.1.
+ * MS-DOS: tested with Turbo C++ v3.0, Borland C++ v3.1, DGJPP gcc v4.7.3.
  *         Load ANSI.SYS or compatible ANSI driver before using.
- * Windows: tested with GCC 3.4.4 under Cygwin.
- * Linux: tested with GCC 4.2.4 under Ubuntu 8.04.3 LTS.
+ * Windows: tested with GCC 4.8.3 under Cygwin.
+ * Linux: tested with GCC 4.8.2 under Ubuntu 14.04 LTS.
  * AmigaOS: tested with DICE C 3.16 under AmigaOS 1.3.
  *
  * History :
@@ -38,6 +38,11 @@
  *        added GNU Makefile.
  * v1.5: Jan 111 simplified and cleaned up code, allowing it to
  *        build on AmigaOS 1.3 using DICE C.  Added -i option.
+ * v1.6: Oct 114 cleaned up functioning under DOS, Turbo C, DJGPP
+ *        use kbhit() instead of (less reliable?) setcbrk()
+ *        use _setcursortype() instead of inline assembly
+ *        properly clear ANSI terminal screen (esp. Amiga console)
+ *        reorganized build system and converted tabs to spaces
  */
 
 /********************************************************* #INCLUDE'S */
