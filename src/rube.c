@@ -7,11 +7,13 @@
  *
  * Usage :
  *
- * rube [-d] [-q] [-i] [-y delay] [-f frame-skip] [-o offset] <rube-source>
+ * rube [-d] [-q] [-i] [-s num-frames] [-y delay] [-f frame-skip]
+ *      [-o offset] <rube-source>
  *
  *  -d: disable debugging output
  *  -q: produce no output but program output
- *  -i: run interactively (single step with lines from stdin)
+ *  -i: run interactively (step with lines from stdin)
+ *  -s: number of frames per step for -i (default 1)
  *  -y: specify debugging delay in milliseconds (default 0)
  *  -f: specify debugging frame skip in frames (default 1)
  *
@@ -94,6 +96,8 @@ static cell pg2[LINEWIDTH * PAGEHEIGHT];/* playfield' */
 static int x = 0, y = 0;      /* x and y looping */
 static int debug = 1;         /* flag: display ANSI debugging? */
 static int interactive = 0;   /* flag: ask for input each frame? */
+static int framestep = 1;     /* number of frames to run per step */
+static int framecount = 1;    /* number of frames run this step */
 static int deldur = 0;        /* debugging delay in milliseconds */
 static int debskip = 1;       /* frame skip in debug view */
 static int debopos = 1;       /* output column in debugger */
@@ -124,7 +128,7 @@ int main (int argc, char **argv)
 
   if (argc < 2)
   {
-    printf ("USAGE: rube [-d] [-q] [-i] [-y delay] [-f skip] foo.rub\n");
+    printf ("USAGE: rube [-d] [-q] [-i] [-s frames] [-y delay] [-f skip] foo.rub\n");
     exit (0);
   }
   for (i = 1; i < argc; i++)
@@ -132,9 +136,11 @@ int main (int argc, char **argv)
     if (!strcmp(argv[i], "-d")) { debug = 0; }
     if (!strcmp(argv[i], "-q")) { quiet = 1; debug = 0; }
     if (!strcmp(argv[i], "-i")) { interactive = 1; debug = 1; }
-    if (!strcmp(argv[i], "-y")) { deldur = atoi(argv[i + 1]); }
-    if (!strcmp(argv[i], "-f")) { debskip = atoi(argv[i + 1]); }
+    if (!strcmp(argv[i], "-s")) { i++; if (i < argc) framestep = atoi(argv[i]); }
+    if (!strcmp(argv[i], "-y")) { i++; if (i < argc) deldur = atoi(argv[i]); }
+    if (!strcmp(argv[i], "-f")) { i++; if (i < argc) debskip = atoi(argv[i]); }
   }
+  framecount = framestep;
   if (!quiet) printf ("Cat's Eye Technologies' RUBE Interpreter v1.5\n");
   f = fopen (argv[argc - 1], "r");
   if (f == NULL) {
@@ -511,14 +517,18 @@ int main (int argc, char **argv)
             (curd(0,1)=='F')) nex = ' ';
       }
     }
+    if (deldur > 0) {
+      rube_delay (deldur);
+    }
     if (interactive) {
-      char s[80];
-      fgets(s, 79, stdin);
-      if (s[0] == 'q') done = 1;
-    } else {
-      if (deldur > 0) {
-        rube_delay (deldur);
+      framecount--;
+      if (framecount == 0) {
+        char s[80];
+        fgets(s, 79, stdin);
+        if (s[0] == 'q') done = 1;
+        framecount = framestep;
       }
+    } else {
 #ifdef MSDOS
       if (kbhit()) {
         char c;
