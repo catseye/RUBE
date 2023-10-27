@@ -77,7 +77,7 @@ replicate themselves at `,`'s.
 Ramps `/` and `\\` are used for dozers to move from girder to girder.
 
 Conveyor belts `>` and `<` carry crates along with no help needed from
-dozers.  Note that conveyor belots do not affect dozer motion.
+dozers.  Note that conveyor belts do not affect dozer motion.
 
 Winches up `W` and down `M` move crates from girder to girder.
 
